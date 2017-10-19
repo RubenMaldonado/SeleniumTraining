@@ -11,7 +11,11 @@ namespace SeleniumTraining.Tools
 {
     public class EmailSender
     {
-        public void SendEmail(string mailto = "ruben.maldonado.tena@gmail.com", string mailfrom = "titaniumsoltest@gmail.com", string subject = "subject", string body = "body")
+        public void SendEmail(string mailto = "ruben.maldonado.tena@gmail.com", 
+                                string mailfrom = "titaniumsoltest@gmail.com", 
+                                string subject = "subject", 
+                                string body = "body",
+                                string attachementFileName = "")
         {
             var to = new MailAddress(mailto);
             
@@ -24,7 +28,11 @@ namespace SeleniumTraining.Tools
             mail.Subject = subject;
 
             mail.Body = body;
-            
+
+            if ( attachementFileName != "" )
+            {
+                mail.Attachments.Add( new Attachment( attachementFileName ) );
+            }
             smtp.Host = "smtp.gmail.com";
 
             smtp.Port = 587;

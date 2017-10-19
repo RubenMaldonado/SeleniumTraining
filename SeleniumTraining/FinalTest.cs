@@ -22,6 +22,9 @@ namespace SeleniumTraining
         
         private IWebDriver _driver;
         private ScreenShot _screenShot;
+        private PdfGenerator _pdfGenerator;
+        private EmailSender _emailSender;
+        private VideoRecorder _videoRecorder;
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -30,6 +33,9 @@ namespace SeleniumTraining
         {
             _driver = new ChromeDriver();
             _screenShot = new ScreenShot( _driver );
+            _emailSender = new EmailSender();
+            _pdfGenerator = new PdfGenerator();
+            _videoRecorder = new VideoRecorder();
         }
 
         [TearDown]
@@ -39,20 +45,12 @@ namespace SeleniumTraining
             _driver.Dispose();
         }
 
-        //[Test]
-        //public void Should_SuccessfulLogin_When_ValidCredentialsAreUsed()
-        //{
-        //    string testId = GetTestUniqueIdentifier();
-        //    Log(testId, START);
-        //    var loginPage = new LoginPage( _driver, testId);
-        //    var mailboxPage = loginPage.Login( mailPageURL, mailAddress, mailPassword );
-        //    Assert.IsTrue( mailboxPage.IsPageLoaded );
-        //    Log(testId, END );
-        //}
-
+        //This is a test with a sample of all the crazy types of recordings that we can have, log, screenshot, pdf and video recording.
         [Test]
         public void Should_SuccessfulLogin_When_ValidCredentialsAreUsed()
         {
+            _videoRecorder.StartRecording();
+
             var loginPage = new LoginPage(_driver);
 
             loginPage.Navigate();
@@ -68,6 +66,18 @@ namespace SeleniumTraining
             _screenShot.Take();
             
             log.Info( _screenShot.GeneratedFilesLog() );
+            
+            _pdfGenerator.ImageFileNames = _screenShot.GeneratedFiles;
+
+            _pdfGenerator.GeneratePdf();
+            
+            _emailSender.SendEmail(
+                mailto: "ruben.maldonado.tena@gmail.com", 
+                subject: "Run - Test PDF File", 
+                body: "Attached the screenshot of this great and fantastic text", 
+                attachementFileName: _pdfGenerator.FileName );
+
+            _videoRecorder.StopRecording();
         }
 
 
