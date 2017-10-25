@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
 
 namespace SeleniumTraining.PageObject
 {
@@ -31,6 +32,10 @@ namespace SeleniumTraining.PageObject
         [FindsBy(How = How.Id, Using = "login-status-message")]
         public IWebElement StatusMessageDiv { get; set; }
 
+        [FindsBy(How = How.ClassName, Using = "error-notice")]
+        public IWebElement ErrorStatusMessageDiv { get; set; }
+
+
         public void Navigate()
         {
             this.Browser.Navigate().GoToUrl( URL );
@@ -46,6 +51,30 @@ namespace SeleniumTraining.PageObject
 
             return new InboxPage( Browser );
         }
+
+
+        internal bool IsErrorMessageDisplayed()
+        {
+            var wait = new WebDriverWait(Browser, TimeSpan.FromSeconds(3));
+
+            try
+            {
+      
+                wait.Until(ExpectedConditions.ElementExists(By.ClassName("error-notice")));
+                return true;
+            }
+            catch (NoSuchElementException)
+            {
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            
+        }
+        
     }
 
 

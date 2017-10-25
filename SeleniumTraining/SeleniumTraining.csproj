@@ -71,9 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FinalTest.cs" />
-    <Compile Include="Models\BasePage.cs" />
-    <Compile Include="Models\LoginPage.cs" />
-    <Compile Include="Models\MailboxPage.cs" />
     <Compile Include="PageObject\InboxPage.cs" />
     <Compile Include="PageObject\LoginPage.cs" />
     <Compile Include="PageObject\PageObject.cs" />

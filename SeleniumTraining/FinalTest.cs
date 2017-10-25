@@ -80,104 +80,77 @@ namespace SeleniumTraining
             _videoRecorder.StopRecording();
         }
 
+        [Test]
+        public void Should_FailLogin_When_InvalidCredentialsAreUsed()
+        {
+            var loginPage = new LoginPage(_driver);
 
-        //private void Log(string methodName, string preapend)
-        //{
-        //    log.Info($"{preapend} : {methodName}");
-        //}
+            loginPage.Navigate();
 
-        //[Test]
-        //public void Should_FailLogin_When_InvalidCredentialsAreUsed()
-        //{
-        //    string testId = GetTestUniqueIdentifier();
-        //    Log(testId, START);
+            InboxPage mailboxPage = loginPage.Login(mailAddress, mailWrongPassword);
 
-        //    var loginPage = new LoginPage( _driver );
-        //    MailboxPage mailboxPage = loginPage.Login( mailPageURL, mailAddress, mailWrongPassword);
-        //    Assert.IsFalse( mailboxPage.IsPageLoaded );
+            Assert.IsFalse(mailboxPage.IsPageLoaded());
+            Assert.IsTrue(loginPage.IsErrorMessageDisplayed());
+        }
 
-        //    Log(testId, END);
-        //}
+        [Test]
+        public void Should_DisplayErrorMessageOnLoginPage_When_InvalidCredentialsAreUsed()
+        {
+            var loginPage = new LoginPage(_driver);
 
-        //[Test]
-        //public void Should_DisplayErrorMessageOnLoginPage_When_InvalidCredentialsAreUsed()
-        //{
-        //    string testId = GetTestUniqueIdentifier();
-        //    Log(testId, START);
+            loginPage.Navigate();
 
-        //    var loginPage = new LoginPage(_driver, testId);
-        //    loginPage.Login(mailPageURL, mailAddress, mailWrongPassword);
-        //    Assert.AreEqual(loginPage.GetStatusMessage(), "The login is invalid.");
+            loginPage.Login(mailAddress, mailWrongPassword);
 
+            Assert.IsTrue(loginPage.IsErrorMessageDisplayed());
+        }
 
-        //    Log(testId, END);
-        //}
+        [TestCase("Test")]
+        public void Should_CreateNewFolder_When_OptionIsSelectedOnConfigurationScreen(string folderName)
+        {
+            var loginPage = new LoginPage(_driver);
 
-        //[TestCase("Test")]
-        //public void Should_CreateNewFolder_When_OptionIsSelectedOnConfigurationScreen(string folderName)
-        //{
-        //    string testId = GetTestUniqueIdentifier();
-        //    Log(testId, START);
+            loginPage.Navigate();
 
-        //    var loginPage = new LoginPage(_driver, testId);
+            InboxPage inboxPage = loginPage.Login(mailAddress, mailPassword);
 
-        //    MailboxPage mailboxPage = loginPage.Login(mailPageURL, mailAddress, mailPassword);
+            string folderList = inboxPage.AddNewFolder(folderName);
+                    
+            Assert.IsTrue(folderList.Contains(folderName));
+        }
 
-        //    mailboxPage.AddNewFolder(folderName);
+        [TestCase(mailAddress, "Test Subject", "Test Body")]
+        public void Should_ValidateEmailArrived_After_EmailWasSent(string mailTo, string subject, string body)
+        {
+            var loginPage = new LoginPage(_driver);
 
-        //    Log(testId, END);
-        //}
+            loginPage.Navigate();
 
-        //[TestCase(mailAddress, "Test Subject","Test Body")]
-        //public void Should_ValidateEmailArrived_After_EmailWasSent(string mailTo, string subject, string body )
-        //{
-        //    string testId = GetTestUniqueIdentifier();
-        //    Log(testId, START);
+            InboxPage mailboxPage = loginPage.Login(mailAddress, mailPassword);
 
-        //    var loginPage = new LoginPage( _driver, testId);
-        //    MailboxPage mailboxPage = loginPage.Login( mailPageURL, mailAddress, mailPassword );
-        //    string customSubject = $"{subject} {DateTime.Now.ToOADate()}";
+            string customSubject = $"{subject} {DateTime.Now.ToOADate()}";
 
-        //    string validatedSubject = mailboxPage.CreateAndSendEmail(mailTo, customSubject, body);
+            string validatedSubject = mailboxPage.SendEmail(mailTo, customSubject, body);
 
-        //    Assert.AreEqual( customSubject, validatedSubject );
+            Assert.AreEqual(customSubject, validatedSubject);
 
-        //    Log(testId, END);
-        //}
+        }
 
-        //[Test]
-        //public void Should_SuccessfulLogout_When_LogoutButtonIsPressed()
-        //{
-        //    string testId = GetTestUniqueIdentifier();
-        //    Log(testId, START);
+        [Test]
+        public void Should_SuccessfulLogout_When_LogoutButtonIsPressed()
+        {
+            var loginPage = new LoginPage(_driver);
 
-        //    var loginPage = new LoginPage(_driver, testId);
-        //    loginPage.Login(mailPageURL, mailAddress, mailPassword);
-        //    string message = loginPage.Logout();
+            loginPage.Navigate();
+
+            var inboxPage = loginPage.Login(mailAddress, mailPassword);
+
+            inboxPage.WaitUntilPageLoads();
             
-        //    Assert.AreEqual(message, "You have logged out.");
+            string message = inboxPage.Logout();
 
-        //    Log(testId, END);
-        //}
-
-      
-
-        //[MethodImpl(MethodImplOptions.NoInlining)]
-        //public string GetTestUniqueIdentifier()
-        //{
-        //    var st = new StackTrace();
-        //    StackFrame sf = st.GetFrame(1);
-
-        //    return $"{DateTime.Now.ToOADate()}_{sf.GetMethod().Name}";
-            
-        //}
-
-        //[Test]
-        //public void TestSendMail()
-        //{
-        //    new EmailSender().SendEmail(  );
-        //}
-
+            Assert.AreEqual(message, "You have logged out.");
+        }
     }
 }
 
